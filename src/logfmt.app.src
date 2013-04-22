@@ -1,0 +1,6 @@
+{application, logfmt,
+ [{description, "Log Format App"},
+  {vsn, "0.1."},
+  {modules, []},
+  {registered, []},
+  {applications, [kernel, stdlib]}]}.
