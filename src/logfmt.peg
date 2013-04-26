@@ -22,11 +22,11 @@ case Node of
 end
 `;
 
-p <- pair / key:string '= ' / value:log_value
+p <- pair / key:string '= ' / key:string
 `
 case Node of
-  {value, Value} ->
-    {Value, <<>>};
+  {key, Key} ->
+    {Key, <<>>};
   [{key, Key}, <<"= ">>] ->
     {Key, <<>>};
   _ ->
