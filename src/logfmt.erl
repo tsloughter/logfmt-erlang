@@ -35,7 +35,6 @@ case Node of
   [] -> [];
   [""] -> [];
   _ ->
-    io:format("Node ~p~n", [Node]),
     Head = proplists:get_value(head, Node),
     Tail = [R || [_,R] <- proplists:get_value(tail, Node)],
     [Head|Tail]
@@ -43,7 +42,7 @@ end
  end).
 
 'g'(Input, Index) ->
-  p(Input, Index, 'g', fun(I,D) -> (p_seq([p_one_or_more(p_seq([p_not(p_string(<<"\"">>)), p_not(p_string(<<"-\s-">>)), p_not(p_string(<<"=">>)), p_choose([p_string(<<"\\\\">>), p_string(<<"\\\"">>), p_anything()])])), fun 'space'/2, p_string(<<"-\s-">>), fun 'space'/2]))(I,D) end, fun(Node, _Idx) ->Node end).
+  p(Input, Index, 'g', fun(I,D) -> (p_seq([p_one_or_more(p_seq([p_not(p_string(<<"\"">>)), p_not(p_string(<<"\s-\s">>)), p_not(p_string(<<"=">>)), p_choose([p_string(<<"\\\\">>), p_string(<<"\\\"">>), p_anything()])])), fun 'space'/2, p_string(<<"-">>), fun 'space'/2]))(I,D) end, fun(Node, _Idx) ->Node end).
 
 'p'(Input, Index) ->
   p(Input, Index, 'p', fun(I,D) -> (p_choose([fun 'pair'/2, p_seq([p_label('key', fun 'string'/2), p_string(<<"=\s">>)]), p_label('key', fun 'string'/2)]))(I,D) end, fun(Node, _Idx) ->
@@ -72,7 +71,7 @@ end
   p(Input, Index, 'quoted_string', fun(I,D) -> (p_seq([p_string(<<"\"">>), p_label('chars', p_one_or_more(p_seq([p_not(p_string(<<"\"">>)), p_choose([p_string(<<"\\\\">>), p_string(<<"\\\"">>), p_anything()])]))), p_string(<<"\"">>)]))(I,D) end, fun(Node, _Idx) ->iolist_to_binary(proplists:get_value(chars, Node)) end).
 
 'number'(Input, Index) ->
-  p(Input, Index, 'number', fun(I,D) -> (p_seq([fun 'int'/2, p_optional(fun 'frac'/2), p_optional(fun 'exp'/2), p_optional(fun 'units'/2)]))(I,D) end, fun(Node, _Idx) ->
+  p(Input, Index, 'number', fun(I,D) -> (p_seq([fun 'int'/2, p_optional(fun 'frac'/2), p_optional(fun 'exp'/2), fun 'units'/2]))(I,D) end, fun(Node, _Idx) ->
 case Node of
   [Int, [], [], _] -> list_to_integer(binary_to_list(iolist_to_binary(Int)));
   [Int, Frac, [], _] -> list_to_float(binary_to_list(iolist_to_binary([Int, Frac])));

@@ -46,7 +46,7 @@ log_value <- (number / true / false / string) ~;
 string <- quoted_string / (!'"' !'=' !' ' ("\\\\" / '\\"' / .))+ `iolist_to_binary(Node)`;
 quoted_string <- '"' chars:(!'"' ("\\\\" / '\\"' / .))+ '"' `iolist_to_binary(proplists:get_value(chars, Node))`;
 
-number <- int frac? exp? units?
+number <- int frac? exp? units
 `
 case Node of
   [Int, [], [], _] -> list_to_integer(binary_to_list(iolist_to_binary(Int)));
