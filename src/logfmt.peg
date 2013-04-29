@@ -10,7 +10,7 @@ case Node of
 end
 `;
 
-log <- head:p tail:(space p)* / ''
+log <- garbage:g head:p tail:(space p)* / ''
 `
 case Node of
   [] -> [];
@@ -21,6 +21,8 @@ case Node of
     [Head|Tail]
 end
 `;
+
+g <- (!'"' !'- -' !'=' ("\\\\" / '\\"' / .))+  space '- -' space ~;
 
 p <- pair / key:string '= ' / key:string
 `

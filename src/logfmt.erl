@@ -30,22 +30,26 @@ end
  end).
 
 'log'(Input, Index) ->
-  p(Input, Index, 'log', fun(I,D) -> (p_choose([p_seq([p_label('head', fun 'p'/2), p_label('tail', p_zero_or_more(p_seq([fun 'space'/2, fun 'p'/2])))]), p_string(<<"">>)]))(I,D) end, fun(Node, _Idx) ->
+  p(Input, Index, 'log', fun(I,D) -> (p_choose([p_seq([p_label('garbage', fun 'g'/2), p_label('head', fun 'p'/2), p_label('tail', p_zero_or_more(p_seq([fun 'space'/2, fun 'p'/2])))]), p_string(<<"">>)]))(I,D) end, fun(Node, _Idx) ->
 case Node of
   [] -> [];
   [""] -> [];
   _ ->
+    io:format("Node ~p~n", [Node]),
     Head = proplists:get_value(head, Node),
     Tail = [R || [_,R] <- proplists:get_value(tail, Node)],
     [Head|Tail]
 end
  end).
 
+'g'(Input, Index) ->
+  p(Input, Index, 'g', fun(I,D) -> (p_seq([p_one_or_more(p_seq([p_not(p_string(<<"\"">>)), p_not(p_string(<<"-\s-">>)), p_not(p_string(<<"=">>)), p_choose([p_string(<<"\\\\">>), p_string(<<"\\\"">>), p_anything()])])), fun 'space'/2, p_string(<<"-\s-">>), fun 'space'/2]))(I,D) end, fun(Node, _Idx) ->Node end).
+
 'p'(Input, Index) ->
-  p(Input, Index, 'p', fun(I,D) -> (p_choose([fun 'pair'/2, p_seq([p_label('key', fun 'string'/2), p_string(<<"=\s">>)]), p_label('value', fun 'log_value'/2)]))(I,D) end, fun(Node, _Idx) ->
+  p(Input, Index, 'p', fun(I,D) -> (p_choose([fun 'pair'/2, p_seq([p_label('key', fun 'string'/2), p_string(<<"=\s">>)]), p_label('key', fun 'string'/2)]))(I,D) end, fun(Node, _Idx) ->
 case Node of
-  {value, Value} ->
-    {Value, <<>>};
+  {key, Key} ->
+    {Key, <<>>};
   [{key, Key}, <<"= ">>] ->
     {Key, <<>>};
   _ ->
