@@ -22,7 +22,7 @@ case Node of
 end
 `;
 
-g <- (!'"' !'- -' !'=' ("\\\\" / '\\"' / .))+  space '- -' space ~;
+g <- (!'"' !' - ' !'=' ("\\\\" / '\\"' / .))+  space '-' space ~;
 
 p <- pair / key:string '= ' / key:string
 `
